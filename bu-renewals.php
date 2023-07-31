@@ -58,6 +58,7 @@ function bu_renewals_content( $blogID ) { // SITE DASHBOARD RENEWAL CONFIRM/DENY
 			print "<p class=\"bu-button-blue\" style=\"text-align: center;\">\n";
 			print "  <a href=\"?bu-renew-site=Y\">Renew " . get_bloginfo('name') . "</a>\n";
 			print "  <a href=\"ms-delete-site.php\">Delete " . get_bloginfo('name') . "</a>\n";
+				//update_blog_status( $blogID, 'archived', 1 ); //set status archived as true
 		print "</p>\n";
 		}
 	}
@@ -146,11 +147,6 @@ function bu_renewals_content_confirmed( $blogID ) { // USED IN bu_renewals_conte
 	}
 }
 
-function  bu_renewals_deactivate_blog( $id ) {
-	$id = get_current_blog_id();
-	echo 'dsafeafshertrytfewrsfdghrtserghhhjhvjhjkhhjhjhjkb jbnmjbnmj' . $id;
-}
-
 /**
  * bu_renewals_traffic_cop
  *
@@ -187,15 +183,34 @@ function bu_renewals_traffic_cop( $blogID, $type ){ // USED IN bu_renewals_add_d
 			$renewal = strtotime( $end_date );
 			$currentDate = strtotime( date('F d, Y') );
 
+			$archived = get_blog_status( $blogID, 'archived');
+
 			if ( $renewal < $currentDate ) {
 				// If renewal date has passed
 				wp_add_dashboard_widget( 'bu_renewals', "Renewal date for '" . get_bloginfo('name') . "' has passed.", 'bu_renewals_content', '', $blogID );
-				bu_renewals_deactivate_blog($blogID);
-				add_action( 'deactivate_blog', 'bu_renewals_deactivate_blog' );
-				// do_action( 'deactivate_blog', $id );
+				update_blog_status( $blogID, 'archived', 1, $deprecated = null ); //set status archived as true
 
+				/* need to store archival date somewhere; should add to database?: Renewal Date & Archival Date; potential solution:
+
+					$archival_date = strtotime("now")
+					$deletion_date = strtotime($archival_date . ' + 9 months');
+					//echo "____________________________" . date("F d, Y", $deletion_date) . "<br>";
+					
+					$'blog_' . $blogID . '_deletion_info' = [
+						// "blogID" => $blogID,
+						"archival_date" => $archival_date,
+						"deletion_date" => $deletion_date
+					];
+				
+					if ( strtotime("now") == $'blog_' . $blogID . '_deletion_info'['deletion_date'] )
+					{
+						wp_delete_site($blogID);
+					}
+
+					would this work? if so, a similar process could be done for automated email timeline
+				*/
 			}
-			else if ( !$renewed && !isset($_REQUEST['bu-renew-site']) ) {
+			else if ( (!$renewed && !isset($_REQUEST['bu-renew-site'])) && ($archived == 0) ) { //if it needs renewed and isn't already archived
 				// Renewal widget.
 				wp_add_dashboard_widget( 'bu_renewals', "Please Renew '" . get_bloginfo('name') . "'", 'bu_renewals_content', '', $blogID );
 			}

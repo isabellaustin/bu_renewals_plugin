@@ -222,9 +222,17 @@ class bu_renewals_optionspage {
     $this -> _display_datepicker( 'end_date', $end_date, 60 );
 	
 
-    //INCREMENTING THE RENEWAL DATE
-    // $annual = strtotime($end_date . ' + 1 Year');
+    /* INCREMENTING THE RENEWAL DATE
+    $annual = strtotime($end_date . ' + 1 Year');
     // echo date('m/d/Y', $annual);
+
+    if ( strtotime("now") == $annual )
+    {
+      options['end_date'] = $annual;
+      $end_date = $this -> options['end_date'];
+      $annual = strtotime($end_date . ' + 1 Year');
+    }
+    */
   }
 
 	/**

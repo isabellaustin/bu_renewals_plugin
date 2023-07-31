@@ -16,4 +16,5 @@ Manages site renewal notices for a WordPress Multisite install.
 * 'gt' globally replaced with 'bu'
 * dashboard button color is changed (bu-renewals.css)
 * _display_textfield replaced with _display_datepicker (bu-renewals-settings-page.php)
-* added functionality for if the renewal date has past# bu_renewals_plugin
+* added functionality for if the renewal date has passed
+* added 'archived site' error checking
