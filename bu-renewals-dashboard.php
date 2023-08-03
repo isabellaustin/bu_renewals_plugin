@@ -132,10 +132,11 @@ function bu_renewals_network_renewed( $column, $blog_id ) {
 
 			if ( $work ){
 				foreach ( $work as $data ) {
-					$values = explode( '|', $data -> meta_value) ;
+					$values = explode( '|', $data -> meta_value,) ;
 					// values[0] - blog ID
 					// values[1] - renewal date
 					// values[2] - user account
+					// values[3] - archival date
 					$burenewal[ $values[0] ][] = $values[1];
 				}
 			}
@@ -147,9 +148,38 @@ function bu_renewals_network_renewed( $column, $blog_id ) {
 			}
 		}
 	}
+	
+	// if ( $column == 'archival' ) {
+	// 	if ( $burenewal === false ) {
+
+	// 		// Query to pull renewal data from DB
+	// 		$wpdb->burenewtable = $wpdb->base_prefix . 'sitemeta';
+	// 		$work = $wpdb->get_results( "SELECT meta_value FROM {$wpdb->burenewtable} WHERE meta_key LIKE 'bu_%_renewed'" );
+
+	// 		$burenewal = array();
+
+	// 		if ( $work ){
+	// 			foreach ( $work as $data ) {
+	// 				$values = explode( '|', $data -> meta_value) ;
+	// 				// values[0] - blog ID
+	// 				// values[1] - renewal date
+	// 				// values[2] - user account
+	// 				// values[3] - archival date
+	// 				$burenewal[ $values[0] ][] = $values[3];
+	// 			}
+	// 		}
+	// 	}
+
+	// 	if ( !empty( $burenewal[ $blog_id ][3] ) && is_array ( $burenewal[ $blog_id ][3] ) ) {
+	// 		foreach( $burenewal[ $blog_id ][3] as $datestamp ) {
+	// 			echo $datestamp . '<br />';
+	// 		}
+	// 	}
+	// }
 }
 add_action( 'manage_blogs_custom_column', 'bu_renewals_network_renewed', 1, 3 );
 add_action( 'manage_sites_custom_column', 'bu_renewals_network_renewed', 1, 3 );
+
 
 /**
  * bu_renewals_network_user_columns()
@@ -163,7 +193,6 @@ function bu_renewals_network_user_columns( $columns ) {
 	$columns[ 'renewal-user' ] = __( 'Renewal User' );
 	return $columns;
 }
-
 add_filter( 'wpmu_blogs_columns', 'bu_renewals_network_user_columns' );
 
 /**
@@ -209,5 +238,156 @@ function bu_renewals_user_field( $column, $blog_id ) {
 }
 add_action( 'manage_blogs_custom_column', 'bu_renewals_user_field', 1, 3 );
 add_action( 'manage_sites_custom_column', 'bu_renewals_user_field', 1, 3 );
+
+///* ARCHIVAL DASHBOARD COLUMN STARTS HERE =============================================
+
+/**
+ * bu_renewals_add_network_dashboard_widget()
+ *
+ * Sets up network dashboard widget.
+ *
+ * @return void
+ */
+function bu_renewals_add_archive_dashboard_widget() {
+
+	wp_add_dashboard_widget( 'bu_archivals', 'Site Archival Status ', 'bu_renewals_network_archive' );
+
+  	if ( $flag ) {
+	 	// Globalize the metaboxes array, this holds all the widgets for wp-admin
+	 	global $wp_meta_boxes;
+
+	 	// Get the regular dashboard widgets array
+	 	// (which has our new widget already but at the end)
+
+	 	$normal_dashboard = $wp_meta_boxes['dashboard']['normal']['core'];
+
+	 	// Backup and delete our new dashboard widget from the end of the array
+
+	 	$example_widget_backup = array( 'bu_archivals' => $normal_dashboard['bu_archivals'] );
+	 	unset( $normal_dashboard['bu_archivals'] );
+
+	 	// Merge the two arrays together so our widget is at the beginning
+
+	 	$sorted_dashboard = array_merge( $example_widget_backup, $normal_dashboard );
+
+	 	// Save the sorted array back into the original metaboxes
+
+	 	$wp_meta_boxes['dashboard']['normal']['core'] = $sorted_dashboard;
+	}
+}
+
+/**
+ * bu_renewals_network_archive_columns()
+ *
+ * Adds columns to network -> sites.
+ *
+ * @param [type] $columns
+ * @return void
+ */
+function bu_renewals_network_archive_columns( $columns ) {
+	$columns[ 'archival' ] = __( 'Archival' );
+	return $columns;
+}
+add_filter( 'wpmu_blogs_columns', 'bu_renewals_network_archive_columns' );
+
+/**
+ * bu_renewals_network()
+ *
+ * Prints out network list after ksorting.
+ *
+ * @return void
+ */
+function bu_renewals_network_archive() {
+	global $wpdb;
+
+	# Convert into WP_Meta_Query https://developer.wordpress.org/reference/classes/wp_meta_query/?
+	$siteList = $wpdb->get_results("SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key LIKE 'bu_%_archived'");
+	if ( $siteList ) {
+		$siteListClean = array();
+		foreach ($siteList as $data) {
+			// array[id][values], to sort by array[sid][1]
+			$values = explode('|', $data -> meta_value);
+			$siteListClean[$values[0]] = $values;
+		}
+
+		// sort by date descending $array[1]
+		usort($siteListClean, function ($a, $b) {
+
+			if ($a[1] == $b[1]) {
+				return 0;
+			}
+			return ($a[1] > $b[1]) ? -1 : 1;
+
+		});
+
+		// truncate to last 10
+		while ( count($siteListClean) > 10) array_shift($siteListClean );
+
+		// initializing output
+		$output = array();
+
+		// build table body from $output
+		foreach ($siteListClean as $data) {
+			array_push($output,"<tr><th scope='row'>" . $data[0] . "</th><td>" . $data[1] . "</td><td>" . $data[2] . "</td></tr>\n");
+		}
+
+		// table output
+		print "<p>So far, <strong>" . count($siteList) . "</strong> out of " . get_blog_count() . " websites have been archived.</p>\n";
+		print "<h3><strong>Last 10 website archivals</strong></h3>\n";
+		print "<table border=1 cellpadding=4 width=100%>\n";
+		print "<tr><th align=left scope='col'>Site ID</th><th align=left scope='col'>Date</th><th align=left scope='col'>User</th></tr>\n";
+		print implode("\n", $output);
+		print "</table>\n";
+		print "<p class=\"bu-button-blue\"><a href=\"/wp-admin/network/settings.php?page=bu-renewals-config\">Settings</a></p>\n\n";
+		#print "<pre>" . print_r($siteList, 1) . "</pre>\n";
+	}
+	else {
+		print "<p>So far, <strong>0</strong> out of " . get_blog_count() . " websites have been archived.</p>\n";
+
+	}
+}
+
+/**
+ * bu_renewals_network_archived()
+ *
+ * Adds field to Network -> Sites.
+ *
+ * @param [type] $column
+ * @param [type] $blog_id
+ * @return void
+ */
+function bu_renewals_network_archived( $column, $blog_id ) {
+	global $wpdb;
+	static $burenewal = false;
+
+	if ( $column == 'archival' ) {
+		if ( $burenewal === false ) {
+
+			// Query to pull renewal data from DB
+			$wpdb->burenewtable = $wpdb->base_prefix . 'sitemeta';
+			$work = $wpdb->get_results( "SELECT meta_value FROM {$wpdb->burenewtable} WHERE meta_key LIKE 'bu_%_archived'" );
+
+			$burenewal = array();
+
+			if ( $work ){
+				foreach ( $work as $data ) {
+					$values = explode( '|', $data -> meta_value) ;
+					// values[0] - blog ID
+					// values[1] - archival date
+					// values[2] - user account
+					$burenewal[ $values[0] ][] = $values[1];
+				}
+			}
+		}
+
+		if ( !empty( $burenewal[ $blog_id ] ) && is_array ( $burenewal[ $blog_id ] ) ) {
+			foreach( $burenewal[ $blog_id ] as $datestamp ) {
+				echo $datestamp . '<br />';
+			}
+		}
+	}
+}
+add_action( 'manage_blogs_custom_column', 'bu_renewals_network_archived', 1, 3 );
+add_action( 'manage_sites_custom_column', 'bu_renewals_network_archived', 1, 3 );
 
 ?>

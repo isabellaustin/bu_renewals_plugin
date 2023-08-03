@@ -1,10 +1,10 @@
-/*== BU Buttons:  Blue on Gold, White on Blue, White on Dark Grey - CKEditor Styles ==*/
+/*== BU Buttons:  Red on Navy, Green on Navy ==*/
 
-DIV#bu_renewals P.bu-button-blue {
+DIV#bu_renewals P.bu-button-green {
   margin-top: 20px;
 }
 
-DIV#bu_renewals P.bu-button-blue A {
+DIV#bu_renewals P.bu-button-green A {
   display: inline-block;
   margin: 0 8px 10px 0;
   padding: 6px 18px;
@@ -15,16 +15,50 @@ DIV#bu_renewals P.bu-button-blue A {
   border-radius: 3px;
 }
 
-/*-- Butler Blue Buttons: White Text on Blue Background --*/
+/*-- Butler Blue Buttons: White Text on RED Background --*/
 
-DIV#bu_renewals P.bu-button-blue A {
+DIV#bu_renewals P.bu-button-green A {
   font-weight: 500;
-  background-color: #00A3E0;
+  background-color: #0fb000; 
+  /* 00A3E0 13294B e0000f 0fb000
+  /var/www/html/wp-content/plugins/bu-renewals-master/bu-renewals.css
+  */
   color: #fff !important;
 }
 
-DIV#bu_renewals P.bu-button-blue A:focus,
+DIV#bu_renewals P.bu-button-green A:focus,
 DIV#bu_renewals P.bu-button-blue A:hover {
   background-color: #13294B;
   border: dotted 1px black;
 }
+
+/*
+
+DIV#bu_renewals P.bu-button-green {
+  margin-top: 20px;
+}
+
+DIV#bu_renewals P.bu-button-green A {
+  display: inline-block;
+  margin: 0 8px 10px 0;
+  padding: 6px 18px;
+  white-space: nowrap;
+  transition: background .2s ease-in-out;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  border: dotted 1px transparent;
+  border-radius: 3px;
+}
+
+/*-- Butler Blue Buttons: White Text on GREEN Background --*/
+
+/* DIV#bu_renewals P.bu-button-green A {
+  font-weight: 500;
+  background-color: #0fb000;
+  color: #fff !important;
+} *
+
+DIV#bu_renewals P.bu-button-red A:focus,
+DIV#bu_renewals P.bu-button-blue-two A:hover {
+  background-color: #13294B;
+  border: dotted 1px black;
+}*/
