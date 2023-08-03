@@ -55,9 +55,9 @@ function bu_renewals_content( $blogID ) { // SITE DASHBOARD RENEWAL CONFIRM/DENY
 			}
 
 			print "<p>You have until <strong>" . $end_date. "</strong> to renew the website <i>'" . get_bloginfo('name') . "'</i>. Non-renewed websites will be archived for 90 days and then deleted.</p>\n";
-			print "<p class=\"bu-button-blue\" style=\"text-align: center;\">\n";
-			print "  <a href=\"?bu-renew-site=Y\">Renew " . get_bloginfo('name') . "</a>\n";
-			print "  <a href=\"ms-delete-site.php\">Delete " . get_bloginfo('name') . "</a>\n";
+			print "<p style=\"text-align: center;\">\n";
+			print "  <a href=\"?bu-renew-site=Y\" class=\"bu-button-green\">Renew " . get_bloginfo('name') . "</a>\n";
+			print "  <a href=\"ms-delete-site.php\" class=\"bu-button-red\">Delete " . get_bloginfo('name') . "</a>\n";
 		print "</p>\n";
 		}
 	}
@@ -225,8 +225,6 @@ function bu_renewals_traffic_cop( $blogID, $type ){ // USED IN bu_renewals_add_d
 				if ( get_blog_status( $blogID, 'archived' ) !== 1 ) {
 					update_blog_status( $blogID, 'archived', 1 ); //last updated
 					$archival_date = shell_exec("wp site list --field=last_updated --site__in=$blogID");
-						// $blogID = get_current_blog_id();
-						// do_action( 'archive_blog', $blogID );
 				}
 				// echo "<pre> -------------------------".$archival_date."</pre>";
 			}

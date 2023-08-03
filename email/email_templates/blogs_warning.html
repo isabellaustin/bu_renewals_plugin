@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>Hello {{ data['name'] }},</p>
+
+<p><strong>IMPORTANT</strong>: you are receiving this message because you are the 
+supervisor or point of contact for one or more Butler Network Accounts that will soon 
+be inaccessible.</p>
+
+<p>Our records indicate that the following people have an impending job termination
+ date. On the date listed below, their network account (including access to email, 
+ file storage, my.butler.edu, card access, etc.) will be disabled. Once disabled, 
+ they will not have access to any Butler systems except if the person is a Butler
+ alumni with a degree conferred in May 2014 or thereafter, the account will convert
+ to alumni status which will allow them to continue to use the Butler email account.</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID Number</th>
+            <th>User Name</th>
+            <th>Expiration Date</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for row in data['notices'] %}
+    <tr>
+        <td>{{ row['ID'] }}</td>
+        <td>{{ row['UID'] }}</td>
+        <td>{{ row['term_date'] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<p>If this expiration date is incorrect, please contact Human Resources at 
+<a href="tel:"317-940-9355">317-940-9355</a> or <a href="mailto:askhr@butler.edu">
+askhr@butler.edu</a>. Otherwise, the account(s) will be disabled upon the disabled date
+ listed and the contents of the account will be subsequently deleted according to Butler
+ IT policy (typically about 6 months after the account is disabled).</p>
+
+<p>If the expiration date is correct, please consider the items outlined here: 
+<a href="https://butleru.force.com/askbutler/s/article/What-do-I-need-to-do-if-one-of-my-employees-is-leaving-Butler-offboarding-termination">
+https://butleru.force.com/askbutler/s/article/What-do-I-need-to-do-if-one-of-my-employees-is-leaving-Butler-offboarding-termination</a> 
+</p>
+ {% endblock %}
