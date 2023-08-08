@@ -18,3 +18,4 @@ Manages site renewal notices for a WordPress Multisite install.
 * _display_textfield replaced with _display_datepicker (bu-renewals-settings-page.php)
 * added functionality for if the renewal date has passed
 * added 'archived site' error checking
+* implemented emailing

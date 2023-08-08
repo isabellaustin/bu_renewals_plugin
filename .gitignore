@@ -1,1 +1,6 @@
+__pycache__
 config.json
+email/blogs.csv
+email/recipients.csv
+email/sitemeta.csv
+email/renewedblogs.csv
