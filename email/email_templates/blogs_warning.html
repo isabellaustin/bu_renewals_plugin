@@ -15,19 +15,21 @@ be inaccessible.</p>
 <table>
     <thead>
         <tr>
-            <th>User Name</th>
-            <th>Blog ID</th>
+            <!-- <th>User Name</th> -->
+            <!-- <th>Blog ID</th> -->
             <th>Blog Name</th>
             <th>Renewal Date</th>
+            <th>Days Until Archival</th>
         </tr>
     </thead>
     <tbody>
     {% for row in data['notices'] %}
     <tr>
-        <td>{{ data['name'] }}</td>
-        <td>{{ row['ID'] }}</td>
-        <td>{{ row['site'] }}</td>
-        <td>{{ row['term_date'] }}</td>
+        <!-- <td>{{ data['admin'] }}</td> -->
+        <!-- <td>{{ row['ID'] }}</td> -->
+        <td><a href="https://blogs.butler.edu{{ row['site'] }}" target="_blank" >https://blogs.butler.edu{{ row['site'] }}</a></td>
+        <td>{{ row['renewal_due_date'] }}</td>
+        <td>{{ row['archival_countdown'] }}</td>
     </tr>
     {% endfor %}
     </tbody>
