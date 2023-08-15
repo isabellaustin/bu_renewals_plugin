@@ -52,9 +52,12 @@ def get_all_blogs() -> list[int]:
     return all_blogs
 
 
-def get_recipients(blogID: int) -> list[str]:#blogID: int
+def get_recipients(blogID: int) -> list[str]:
     cursor = cnx.cursor()
-    query = (f'''select user_email from wp_users u join wp_usermeta um on u.id=um.user_id where um.meta_key="wp_{blogID}_capabilities" and um.meta_value like "%administrator%"''') #  u join wp_usermeta um on u.id=um.user_id where um.meta_key="wp_%s_capabilities and um.meta_value like "%administrator%"
+    query = (f'''select user_email from wp_users u 
+                join wp_usermeta um on u.id=um.user_id 
+                where um.meta_key="wp_{blogID}_capabilities" 
+                and um.meta_value like "%administrator%"''')
     cursor.execute(query)
 
     results = cursor.fetchall()
@@ -68,7 +71,7 @@ def get_recipients(blogID: int) -> list[str]:#blogID: int
     return recipients
 
 
-def get_renewed_blogs():
+def get_renewed_blogs() -> list[str]:
     datafile = "/var/www/html/wp-content/plugins/bu-renewals-master/email/csv_files/renewedblogs.csv" 
     f = open(datafile, "w")
 
@@ -153,14 +156,10 @@ def get_end_date() -> str:
 
 def has_date_passed() -> bool:
     today = date.today()
-    # print(today)
 
     db_date = get_end_date()
     end_date = (datetime.strptime(db_date, '%Y-%m-%d')).date()
-    # print(end_date)
 
-        # if ( $renewal < $currentDate ) {
-        # // If renewal date has passed
     if( today > end_date ):
         date_passed = True
     else:
@@ -171,15 +170,13 @@ def has_date_passed() -> bool:
 
 def send_renewal_email( renewed, countdown: str, TEST_SEND: bool = False ): #csv_type:str,
     subject = 'blogs.butler.edu Site Archival Notice'  
-    # csvfile = f"/var/www/html/wp-content/plugins/bu-renewals-master/email/csv_files/sitemeta-{csv_type}.csv" #renewed or unrenewed users
+
     csvfile = f"/var/www/html/wp-content/plugins/bu-renewals-master/email/csv_files/sitemeta-unrenewed.csv"
-    
-    data = get_csv_data(csvfile)    # load data
     df = pd.read_csv(csvfile)       # remove renewed sites
     for blog_id in renewed:
         df = df.drop(df[df.site_id == blog_id].index)
         df.to_csv(csvfile, index=False)
-    data = get_csv_data(csvfile)    # reload data
+    data = get_csv_data(csvfile)    # load data
 
     # send all the warnings in one email per user
     admin_data = {}
@@ -192,8 +189,6 @@ def send_renewal_email( renewed, countdown: str, TEST_SEND: bool = False ): #csv
                 admin_data[ user ] = { 'email': user, 'notices': [] }
             else:
                 admin_data[ user ]['notices'].append({'blog_id': row['site_id'], 'site': row['slug'], 'renewal_due_date': end_date, 'archival_countdown': countdown})
-        # print(admin_data[ user ])
-
 
     for k,v in admin_data.items():
         recipient = v['email']

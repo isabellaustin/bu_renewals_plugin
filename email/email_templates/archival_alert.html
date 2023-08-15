@@ -13,8 +13,6 @@ administrator for one or more Blogs @ Butler sites that have become inaccessible
 <table>
     <thead>
         <tr>
-            <th>User Name</th>
-            <th>Blog ID</th>
             <th>Blog Name</th>
             <th>Renewal Date</th>
         </tr>
@@ -22,9 +20,7 @@ administrator for one or more Blogs @ Butler sites that have become inaccessible
     <tbody>
     {% for row in data['notices'] %}
     <tr>
-        <td>{{ data['name'] }}</td>
-        <td>{{ row['ID'] }}</td>
-        <td>{{ row['site'] }}</td>
+        <td><a href="https://blogs.butler.edu{{ row['site'] }}" target="_blank" >https://blogs.butler.edu{{ row['site'] }}</a></td>
         <td>{{ row['renewal_due_date'] }}</td>
     </tr>
     {% endfor %}

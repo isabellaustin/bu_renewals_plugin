@@ -15,8 +15,6 @@ be inaccessible.</p>
 <table>
     <thead>
         <tr>
-            <!-- <th>User Name</th> -->
-            <!-- <th>Blog ID</th> -->
             <th>Blog Name</th>
             <th>Renewal Date</th>
             <th>Days Until Archival</th>
@@ -25,8 +23,6 @@ be inaccessible.</p>
     <tbody>
     {% for row in data['notices'] %}
     <tr>
-        <!-- <td>{{ data['admin'] }}</td> -->
-        <!-- <td>{{ row['ID'] }}</td> -->
         <td><a href="https://blogs.butler.edu{{ row['site'] }}" target="_blank" >https://blogs.butler.edu{{ row['site'] }}</a></td>
         <td>{{ row['renewal_due_date'] }}</td>
         <td>{{ row['archival_countdown'] }}</td>

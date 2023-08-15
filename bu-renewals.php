@@ -1,11 +1,11 @@
 <?php
 
 /*
-Plugin Name: BU Site Renewal Service
-Version: 1.2
-Description: Provides mechanism for having site owners renew their sites on a periodic basis.
-Author: Professional Web Presence
-Network: true
+	Plugin Name: BU Site Renewal Service
+	Version: 1.2
+	Description: Provides mechanism for having site owners renew their sites on a periodic basis.
+	Author: Professional Web Presence
+	Network: true
 */
 
 require_once( __DIR__ . DIRECTORY_SEPARATOR . 'bu-renewals-settings-page.php' );
@@ -18,7 +18,7 @@ require_once( __DIR__ . DIRECTORY_SEPARATOR . 'bu-renewals-dashboard.php' );
  *
  * @return void
  */
-function bu_renewals_add_dashboard_widget() { // for each blog in blogs; USED IN bu_renewals_init()
+function bu_renewals_add_dashboard_widget() { 
 	$blogID = get_current_blog_id();
 	bu_renewals_traffic_cop($blogID, "widget");
 }
@@ -30,7 +30,7 @@ function bu_renewals_add_dashboard_widget() { // for each blog in blogs; USED IN
  *
  * @return void
  */
-function bu_renewals_content( $blogID ) { // SITE DASHBOARD RENEWAL CONFIRM/DENY VIEW FOR ADMINS/DETERMINED USERS; SC#3
+function bu_renewals_content( $blogID ) { // SITE DASHBOARD RENEWAL CONFIRM/DENY VIEW FOR ADMINS/DETERMINED USERS
 
 	$option = 'bu_' . $blogID . '_site_renewed';
 	$renewed = get_site_option( $option, '' );
@@ -57,7 +57,6 @@ function bu_renewals_content( $blogID ) { // SITE DASHBOARD RENEWAL CONFIRM/DENY
 			print "<p>You have until <strong>" . $end_date. "</strong> to renew the website <i>'" . get_bloginfo('name') . "'</i>. Non-renewed websites will be archived for 90 days and then deleted.</p>\n";
 			print "<p style=\"text-align: center;\">\n";
 			print "  <a href=\"?bu-renew-site=Y\" class=\"bu-button-green\">Renew " . get_bloginfo('name') . "</a>\n";
-			// print "  <a href=\"?bu-archive-site=Y\" class=\"bu-button-red\">Delete " . get_bloginfo('name') . "</a>\n";
 			print "  <a href=\"ms-delete-site.php\" class=\"bu-button-red\">Delete " . get_bloginfo('name') . "</a>\n";
 		print "</p>\n";
 		}
@@ -92,7 +91,6 @@ function bu_renewals_content_nonadmin( $blogID ) { // SITE DASHBOARD RENEWAL CON
 		$end_date = date_format( $selectedDate,"F d, Y" );
 
 		print "<p>Renewal of this website, <i>'" . get_bloginfo( 'name' ) . "'</i>, is due on <strong>" . $options['end_date'] . "</strong>. Non-renewed websites will be archived for 90 days and deleted.</p>\n";
-		// print "<h4>Site Administators</h4>\n";
 		print "<p>Only one of the website administrators listed below can complete the renewal process.</p>\n";
 
 		$blogID = get_current_blog_id();
@@ -106,13 +104,7 @@ function bu_renewals_content_nonadmin( $blogID ) { // SITE DASHBOARD RENEWAL CON
 				// $message = "You have until " . $end_date. " to renew the website " . get_bloginfo('name') . ". Non-renewed websites will be archived for 90 days and deleted.";
 				// $headers = get_bloginfo('name');
 				// wp_mail( $to, $subject, $message, $headers );
-
-				// $userAdmin = recipients
 			}
-			//somehow pass $userAdmin list as recipients
-
-			// $command = escapeshellcmd('python3 /var/www/html/wp-content/plugins/bu-renewals-master/email/main.py');
-			// shell_exec($command);
 		}
 	  print "\n";
 	}
@@ -125,7 +117,7 @@ function bu_renewals_content_nonadmin( $blogID ) { // SITE DASHBOARD RENEWAL CON
  *
  * @return void
  */
-function bu_renewals_content_confirmed( $blogID ) { // USED IN bu_renewals_content; POST-RENEWAL, CONFIRMATION DASHBOARD WIDGET; SC#4
+function bu_renewals_content_confirmed( $blogID ) { // POST-RENEWAL, CONFIRMATION DASHBOARD WIDGET
 
 	if ( $blogID == "" ){
 		// why do i have to do this? WordPress widgets are a mysterious beast.
@@ -155,7 +147,7 @@ function bu_renewals_content_confirmed( $blogID ) { // USED IN bu_renewals_conte
 	}
 }
 
-function bu_renewals_site_archive( $blogID ) { // USED IN bu_renewals_content; POST-RENEWAL, CONFIRMATION DASHBOARD WIDGET; SC#4
+function bu_renewals_site_archive( $blogID ) { // POST-RENEWAL, CONFIRMATION DASHBOARD WIDGET
 	$options = get_network_option( 1, 'bu_renewals_config', array('enabled' => 'N', 'end_date' => '') );
 	$selectedDate = date_create( $options['end_date'] );
 	$end_date = date_format( $selectedDate,"F d, Y" );
@@ -197,7 +189,7 @@ function bu_renewals_site_archival( $blogID ){
  * @param [type] $blogID
  * @return void
  */
-function bu_renewals_traffic_cop( $blogID, $type ){ // USED IN bu_renewals_add_dashboard_widget()
+function bu_renewals_traffic_cop( $blogID, $type ){ 
 	// if blogID=1, get out.
 	if ( $blogID == 1 ){
 		return;
@@ -232,16 +224,12 @@ function bu_renewals_traffic_cop( $blogID, $type ){ // USED IN bu_renewals_add_d
 
 				// $user = wp_get_current_user();
 				// update_site_option( $option, $blogID . '|' . date('Y-m-d H:i:s') . "|" . $user -> user_login );
-				wp_add_dashboard_widget( 'bu_renewals', "Renewal date for '" . get_bloginfo('name') . "' has passed.", 'bu_renewals_site_archive', '', $blogID );
-
-				// $command = escapeshellcmd('python3 /var/www/html/wp-content/plugins/bu-renewals-master/email/main.py');
-				// shell_exec($command);
+				wp_add_dashboard_widget( 'bu_renewals', "Renewal date for '" . get_bloginfo('name') . "' has passed.", 'bu_renewals_site_archive', '', $blogID );;
 
 				//updates every refresh
 				if ( get_blog_status( $blogID, 'archived' ) !== 1 ) {
 					bu_renewals_site_archival( $blogID ); //last updated
 				}
-				// echo "<pre> -------------------------".$archival_date."</pre>";
 			}
 
 			else if ( (!$renewed && !isset($_REQUEST['bu-renew-site'])) && ($archived == 0) ) { //if it needs renewed and isn't already archived

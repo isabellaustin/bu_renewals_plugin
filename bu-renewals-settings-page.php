@@ -84,12 +84,6 @@ class bu_renewals_optionspage {
 
   }
 
-/*
-  function _display_date_picker($label) {
-  	print "<label for=$label>End Date:</label>"
-  	print "<input type="date">"
-  }
- */
 	/**
 	 * _display_options_section
 	 *
@@ -220,19 +214,6 @@ class bu_renewals_optionspage {
   function _display_option_end_date() {
     $end_date = $this -> options['end_date'];
     $this -> _display_datepicker( 'end_date', $end_date, 60 );
-	
-
-    /* INCREMENTING THE RENEWAL DATE
-    $annual = strtotime($end_date . ' + 1 Year');
-    // echo date('m/d/Y', $annual);
-
-    if ( strtotime("now") == $annual )
-    {
-      options['end_date'] = $annual;
-      $end_date = $this -> options['end_date'];
-      $annual = strtotime($end_date . ' + 1 Year');
-    }
-    */
   }
 
 	/**
@@ -248,8 +229,6 @@ class bu_renewals_optionspage {
         print "document.location='?page=bu-renewals-config&amp;bu-renewal-reset=YES';\n";
         print "}\"></p>\n";
   }
-
-	#---------- END OPTIONS DEFINITIONS ----------#
 
   ## Add a network options page for this plugin.
   function add_networksettings_page() {
