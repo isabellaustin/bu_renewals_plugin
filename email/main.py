@@ -183,12 +183,11 @@ def send_renewal_email( renewed, countdown: str, TEST_SEND: bool = False ): #csv
     db_date = get_end_date()
     end_date = str((datetime.strptime(db_date, '%Y-%m-%d')).date())
 
-    for row in data[-3:]:
+    for row in data:
         for user in row['admin'].split("|"):
             if user not in admin_data.keys():
                 admin_data[ user ] = { 'email': user, 'notices': [] }
-            else:
-                admin_data[ user ]['notices'].append({'blog_id': row['site_id'], 'site': row['slug'], 'renewal_due_date': end_date, 'archival_countdown': countdown})
+            admin_data[ user ]['notices'].append({'blog_id': row['site_id'], 'site': row['slug'], 'renewal_due_date': end_date, 'archival_countdown': countdown})
 
     for k,v in admin_data.items():
         recipient = v['email']
@@ -216,12 +215,11 @@ def send_archive_email( TEST_SEND: bool = False ):
     end_date = str((datetime.strptime(db_date, '%Y-%m-%d')).date())
 
     # if csv_type == "unrenewed":
-    for row in data[-3:]:
+    for row in data:
         for user in row['admin'].split("|"):
             if user not in admin_data.keys():
                 admin_data[ user ] = { 'email': user, 'notices': [] }
-            else:
-                admin_data[ user ]['notices'].append({'blog_id': row['site_id'], 'site': row['slug'], 'renewal_due_date': end_date})
+            admin_data[ user ]['notices'].append({'blog_id': row['site_id'], 'site': row['slug'], 'renewal_due_date': end_date})
         # print(admin_data[ user ])
 
 
